@@ -79,7 +79,7 @@ def seg_and_patch(source, save_dir, patch_save_dir, mask_save_dir, stitch_save_d
 		slide = process_stack.loc[idx, 'slide_id']
 		print("\n\nprogress: {:.2f}, {}/{}".format(i/total, i, total))
 		print('processing {}'.format(slide))
-		
+
 		df.loc[idx, 'process'] = 0
 		slide_id, _ = os.path.splitext(slide)
 
@@ -152,7 +152,7 @@ def seg_and_patch(source, save_dir, patch_save_dir, mask_save_dir, stitch_save_d
 			print('level_dim {} x {} is likely too large for successful segmentation, aborting'.format(w, h))
 			df.loc[idx, 'status'] = 'failed_seg'
 			continue
-
+			
 		if not process_list:
 			df.loc[idx, 'vis_level'] = current_vis_params['vis_level']
 			df.loc[idx, 'seg_level'] = current_seg_params['seg_level']

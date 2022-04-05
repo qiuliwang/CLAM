@@ -30,6 +30,7 @@ def segment(WSI_object, seg_params, filter_params):
 
 def patching(WSI_object, **kwargs):
 	### Start Patch Timer
+	print('Patching Function.')
 	start_time = time.time()
 
 	# Patch
@@ -56,7 +57,12 @@ def seg_and_patch(source, save_dir, patch_save_dir, mask_save_dir, stitch_save_d
 	
 
 
-	slides = sorted(os.listdir(source))
+	init_slides = sorted(os.listdir(source))
+	slides = []
+	for one_slide in init_slides:
+		if 'DS_Store' not in one_slide:
+			slides.append(one_slide)
+			
 	slides = [slide for slide in slides if os.path.isfile(os.path.join(source, slide))]
 	if process_list is None:
 		df = initialize_df(slides, seg_params, filter_params, vis_params, patch_params)
@@ -78,10 +84,14 @@ def seg_and_patch(source, save_dir, patch_save_dir, mask_save_dir, stitch_save_d
 		'max_n_holes': np.full((len(df)), int(filter_params['max_n_holes']), dtype=np.uint32),
 		'line_thickness': np.full((len(df)), int(vis_params['line_thickness']), dtype=np.uint32),
 		'contour_fn': np.full((len(df)), patch_params['contour_fn'])})
-
+	
 	seg_times = 0.
 	patch_times = 0.
 	stitch_times = 0.
+
+	print('======================')
+	print('Number of cases:', total)
+	print('======================')
 
 	for i in range(total):
 		df.to_csv(os.path.join(save_dir, 'process_list_autogen.csv'), index=False)
@@ -89,7 +99,6 @@ def seg_and_patch(source, save_dir, patch_save_dir, mask_save_dir, stitch_save_d
 		slide = process_stack.loc[idx, 'slide_id']
 		print("\n\nprogress: {:.2f}, {}/{}".format(i/total, i, total))
 		print('processing {}'.format(slide))
-		
 		df.loc[idx, 'process'] = 0
 		slide_id, _ = os.path.splitext(slide)
 
@@ -101,7 +110,6 @@ def seg_and_patch(source, save_dir, patch_save_dir, mask_save_dir, stitch_save_d
 		# Inialize WSI
 		full_path = os.path.join(source, slide)
 		WSI_object = WholeSlideImage(full_path)
-
 		if use_default_params:
 			current_vis_params = vis_params.copy()
 			current_filter_params = filter_params.copy()
@@ -182,6 +190,9 @@ def seg_and_patch(source, save_dir, patch_save_dir, mask_save_dir, stitch_save_d
 
 		seg_time_elapsed = -1
 		if seg:
+			print("====================")
+			print("Here Segmentation.")
+			print("====================")
 			WSI_object, seg_time_elapsed = segment(WSI_object, current_seg_params, current_filter_params) 
 
 		if save_mask:
@@ -191,6 +202,9 @@ def seg_and_patch(source, save_dir, patch_save_dir, mask_save_dir, stitch_save_d
 
 		patch_time_elapsed = -1 # Default time
 		if patch:
+			print("====================")
+			print("Here Patching.")
+			print("====================")
 			current_patch_params.update({'patch_level': patch_level, 'patch_size': patch_size, 'step_size': step_size, 
 										 'save_path': patch_save_dir})
 			file_path, patch_time_elapsed = patching(WSI_object = WSI_object,  **current_patch_params,)
