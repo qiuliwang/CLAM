@@ -120,12 +120,14 @@ class WholeSlideImage(object):
                 a = a - np.array(hole_areas).sum()
                 if a == 0: continue
                 if tuple((filter_params['a_t'],)) < tuple((a,)): 
+                    print('a_t: ', tuple((filter_params['a_t'],)))
+                    print('a: ', a)                    
                     filtered.append(cont_idx)
                     all_holes.append(holes)
 
 
             foreground_contours = [contours[cont_idx] for cont_idx in filtered]
-            
+            print('len of foreground contours in function: ', len(foreground_contours))
             hole_contours = []
             
             for hole_ids in all_holes:
@@ -180,8 +182,9 @@ class WholeSlideImage(object):
         
         # Find and filter contours
         contours, hierarchy = cv2.findContours(img_otsu, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE) # Find contours 
-        
-        print(hierarchy)
+        print('len of contours: ', len(contours))
+
+        # print(hierarchy)
         cv2.drawContours(img_otsu,contours,-1,(0,255,255))  
 
         im = Image.fromarray(img_otsu)
@@ -193,25 +196,30 @@ class WholeSlideImage(object):
         if filter_params: 
             foreground_contours, hole_contours = _filter_contours(contours, hierarchy, filter_params)  # Necessary for filtering out artifacts
 
-        cv2.drawContours(img_otsu,hole_contours,-1,(0,0,255))  
+        # cv2.drawContours(img_otsu,hole_contours,-1,(0,0,255))  
         im = Image.fromarray(img_otsu)
         im.save('foreground_contours.png')
 
+        print('len of foreground_contours: ', len(foreground_contours))
         self.contours_tissue = self.scaleContourDim(foreground_contours, scale)
+        print('len of contours_tissue: ', len(self.contours_tissue))
+
         self.holes_tissue = self.scaleHolesDim(hole_contours, scale)
         print('contours_tissue: ', len(self.contours_tissue))
 
         #exclude_ids = [0,7,9]
         if len(keep_ids) > 0:
+            print('here here 1')
             contour_ids = set(keep_ids) - set(exclude_ids)
         else:
+            print('here here 2')
             contour_ids = set(np.arange(len(self.contours_tissue))) - set(exclude_ids)
         
         print('keep_ids: ', keep_ids)
         print('contour_ids: ', contour_ids)
 
         self.contours_tissue = [self.contours_tissue[i] for i in contour_ids]
-        # print('contours_tissue: ', self.contours_tissue)
+        print('contours_tissue: ', self.contours_tissue)
 
         self.holes_tissue = [self.holes_tissue[i] for i in contour_ids]
 
@@ -233,11 +241,10 @@ class WholeSlideImage(object):
 
         img = np.array(self.wsi.read_region(top_left, vis_level, region_size).convert("RGB"))
 
-
-
         if not view_slide_only:
             offset = tuple(-(np.array(top_left) * scale).astype(int))
-            line_thickness = int(line_thickness * math.sqrt(scale[0] * scale[1]))
+            line_thickness = 15 # int(line_thickness * math.sqrt(scale[0] * scale[1]))
+            print('line_thickness: ', line_thickness)
             if self.contours_tissue is not None and seg_display:
 
                 if not number_contours:
@@ -487,7 +494,7 @@ class WholeSlideImage(object):
         y_range = np.arange(start_y, stop_y, step=step_size_y)
         x_coords, y_coords = np.meshgrid(x_range, y_range, indexing='ij')
         coord_candidates = np.array([x_coords.flatten(), y_coords.flatten()]).transpose()
-
+        print('coord_candidates: ', coord_candidates)
         num_workers = mp.cpu_count()
         if num_workers > 4:
             num_workers = 4

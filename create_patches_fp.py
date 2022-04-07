@@ -209,40 +209,40 @@ def seg_and_patch(source, save_dir, patch_save_dir, mask_save_dir, stitch_save_d
 
 		patch_time_elapsed = -1 # Default time
 
-		# if patch:
-		# 	print("====================")
-		# 	print("Here Patching.")
-		# 	print("====================")
-		# 	current_patch_params.update({'patch_level': patch_level, 'patch_size': patch_size, 'step_size': step_size, 
-		# 								 'save_path': patch_save_dir})
-		# 	print('current_patch_params: ', current_patch_params)
-			# file_path, patch_time_elapsed = patching(WSI_object = WSI_object,  **current_patch_params,)
+		if patch:
+			print("====================")
+			print("Here Patching.")
+			print("====================")
+			current_patch_params.update({'patch_level': patch_level, 'patch_size': patch_size, 'step_size': step_size, 
+										 'save_path': patch_save_dir})
+			print('current_patch_params: ', current_patch_params)
+			file_path, patch_time_elapsed = patching(WSI_object = WSI_object,  **current_patch_params,)
 		
-	# 	stitch_time_elapsed = -1
-	# 	if stitch:
-	# 		file_path = os.path.join(patch_save_dir, slide_id+'.h5')
-	# 		if os.path.isfile(file_path):
-	# 			heatmap, stitch_time_elapsed = stitching(file_path, WSI_object, downscale=64)
-	# 			stitch_path = os.path.join(stitch_save_dir, slide_id+'.jpg')
-	# 			heatmap.save(stitch_path)
+		stitch_time_elapsed = -1
+		if stitch:
+			file_path = os.path.join(patch_save_dir, slide_id+'.h5')
+			if os.path.isfile(file_path):
+				heatmap, stitch_time_elapsed = stitching(file_path, WSI_object, downscale=64)
+				stitch_path = os.path.join(stitch_save_dir, slide_id+'.jpg')
+				heatmap.save(stitch_path)
 
-	# 	print("segmentation took {} seconds".format(seg_time_elapsed))
-	# 	print("patching took {} seconds".format(patch_time_elapsed))
-	# 	print("stitching took {} seconds".format(stitch_time_elapsed))
-	# 	df.loc[idx, 'status'] = 'processed'
+		print("segmentation took {} seconds".format(seg_time_elapsed))
+		print("patching took {} seconds".format(patch_time_elapsed))
+		print("stitching took {} seconds".format(stitch_time_elapsed))
+		df.loc[idx, 'status'] = 'processed'
 
-	# 	seg_times += seg_time_elapsed
-	# 	patch_times += patch_time_elapsed
-	# 	stitch_times += stitch_time_elapsed
+		seg_times += seg_time_elapsed
+		patch_times += patch_time_elapsed
+		stitch_times += stitch_time_elapsed
 
-	# seg_times /= total
-	# patch_times /= total
-	# stitch_times /= total
+	seg_times /= total
+	patch_times /= total
+	stitch_times /= total
 
-	# df.to_csv(os.path.join(save_dir, 'process_list_autogen.csv'), index=False)
-	# print("average segmentation time in s per slide: {}".format(seg_times))
-	# print("average patching time in s per slide: {}".format(patch_times))
-	# print("average stiching time in s per slide: {}".format(stitch_times))
+	df.to_csv(os.path.join(save_dir, 'process_list_autogen.csv'), index=False)
+	print("average segmentation time in s per slide: {}".format(seg_times))
+	print("average patching time in s per slide: {}".format(patch_times))
+	print("average stiching time in s per slide: {}".format(stitch_times))
 		
 	seg_times = 1
 	patch_times = 2
@@ -299,7 +299,7 @@ if __name__ == '__main__':
 
 	seg_params = {'seg_level': -1, 'sthresh': 8, 'mthresh': 7, 'close': 4, 'use_otsu': False,
 				  'keep_ids': 'none', 'exclude_ids': 'none'}
-	filter_params = {'a_t':100, 'a_h': 16, 'max_n_holes':8}
+	filter_params = {'a_t':10, 'a_h': 10, 'max_n_holes':8}
 	vis_params = {'vis_level': -1, 'line_thickness': 250}
 	patch_params = {'use_padding': True, 'contour_fn': 'four_pt'}
 
