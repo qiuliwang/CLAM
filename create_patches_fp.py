@@ -194,15 +194,15 @@ def seg_and_patch(source, save_dir, patch_save_dir, mask_save_dir, stitch_save_d
 
 		seg_time_elapsed = -1
 		if seg:
-			print("====================")
-			print("Here Segmentation.")
-			print('current_seg_params', current_seg_params)
-			print('current_filter_params', current_seg_params)
-			print("====================")
+			# print("====================")
+			# print("Here Segmentation.")
+			# print('current_seg_params', current_seg_params)
+			# print('current_filter_params', current_seg_params)
+			# print("====================")
 			WSI_object, seg_time_elapsed = segment(WSI_object, current_seg_params, current_filter_params) 
 
 		if save_mask:
-			print('current_vis_params: ', current_vis_params)
+			# print('current_vis_params: ', current_vis_params)
 			mask = WSI_object.visWSI(**current_vis_params)
 			mask_path = os.path.join(mask_save_dir, slide_id+'.jpg')
 			mask.save(mask_path)
@@ -210,12 +210,12 @@ def seg_and_patch(source, save_dir, patch_save_dir, mask_save_dir, stitch_save_d
 		patch_time_elapsed = -1 # Default time
 
 		if patch:
-			print("====================")
-			print("Here Patching.")
-			print("====================")
+			# print("====================")
+			# print("Here Patching.")
+			# print("====================")
 			current_patch_params.update({'patch_level': patch_level, 'patch_size': patch_size, 'step_size': step_size, 
 										 'save_path': patch_save_dir})
-			print('current_patch_params: ', current_patch_params)
+			# print('current_patch_params: ', current_patch_params)
 			file_path, patch_time_elapsed = patching(WSI_object = WSI_object,  **current_patch_params,)
 		
 		stitch_time_elapsed = -1

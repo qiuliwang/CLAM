@@ -31,7 +31,11 @@ class WholeSlideImage(object):
 #         self.name = ".".join(path.split("/")[-1].split('.')[:-1])
         self.name = os.path.splitext(os.path.basename(path))[0]
         self.wsi = openslide.open_slide(path)
-        # print(self.wsi.level_dimensions)
+        print('level_dimensions: ', self.wsi.level_dimensions)
+        print('level_count: ', self.wsi.level_count)
+        print('level_downsamples: ', self.wsi.level_downsamples)
+
+
         self.level_downsamples = self._assertLevelDownsamples()
         self.level_dim = self.wsi.level_dimensions
     
@@ -205,7 +209,7 @@ class WholeSlideImage(object):
         print('len of contours_tissue: ', len(self.contours_tissue))
 
         self.holes_tissue = self.scaleHolesDim(hole_contours, scale)
-        print('contours_tissue: ', len(self.contours_tissue))
+        # print('contours_tissue: ', len(self.contours_tissue))
 
         #exclude_ids = [0,7,9]
         if len(keep_ids) > 0:
@@ -219,7 +223,7 @@ class WholeSlideImage(object):
         print('contour_ids: ', contour_ids)
 
         self.contours_tissue = [self.contours_tissue[i] for i in contour_ids]
-        print('contours_tissue: ', self.contours_tissue)
+        # print('contours_tissue: ', self.contours_tissue)
 
         self.holes_tissue = [self.holes_tissue[i] for i in contour_ids]
 
@@ -428,6 +432,7 @@ class WholeSlideImage(object):
                 print('Processing contour {}/{}'.format(idx, n_contours))
             
             asset_dict, attr_dict = self.process_contour(cont, self.holes_tissue[idx], patch_level, save_path, patch_size, step_size, **kwargs)
+            print('Shape of asset_dict: ', asset_dict['coords'].shape)
             if len(asset_dict) > 0:
                 if init:
                     save_hdf5(save_path_hdf5, asset_dict, attr_dict, mode='w')
@@ -494,7 +499,7 @@ class WholeSlideImage(object):
         y_range = np.arange(start_y, stop_y, step=step_size_y)
         x_coords, y_coords = np.meshgrid(x_range, y_range, indexing='ij')
         coord_candidates = np.array([x_coords.flatten(), y_coords.flatten()]).transpose()
-        print('coord_candidates: ', coord_candidates)
+        # print('coord_candidates: ', coord_candidates)
         num_workers = mp.cpu_count()
         if num_workers > 4:
             num_workers = 4
@@ -504,7 +509,7 @@ class WholeSlideImage(object):
 
         '''
         iterable = [(coord, contour_holes, ref_patch_size[0], cont_check_fn) for coord in coord_candidates]
-        print('######', len(iterable))        
+        # print('######', len(iterable))        
         # print(iterable[0])
 
         results = pool.starmap(WholeSlideImage.process_coord_candidate, iterable)
