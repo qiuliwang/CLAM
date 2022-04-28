@@ -31,9 +31,9 @@ class WholeSlideImage(object):
 #         self.name = ".".join(path.split("/")[-1].split('.')[:-1])
         self.name = os.path.splitext(os.path.basename(path))[0]
         self.wsi = openslide.open_slide(path)
-        print('level_dimensions: ', self.wsi.level_dimensions)
-        print('level_count: ', self.wsi.level_count)
-        print('level_downsamples: ', self.wsi.level_downsamples)
+        # print('level_dimensions: ', self.wsi.level_dimensions)
+        # print('level_count: ', self.wsi.level_count)
+        # print('level_downsamples: ', self.wsi.level_downsamples)
 
 
         self.level_downsamples = self._assertLevelDownsamples()
@@ -124,14 +124,14 @@ class WholeSlideImage(object):
                 a = a - np.array(hole_areas).sum()
                 if a == 0: continue
                 if tuple((filter_params['a_t'],)) < tuple((a,)): 
-                    print('a_t: ', tuple((filter_params['a_t'],)))
-                    print('a: ', a)                    
+                    # print('a_t: ', tuple((filter_params['a_t'],)))
+                    # print('a: ', a)                    
                     filtered.append(cont_idx)
                     all_holes.append(holes)
 
 
             foreground_contours = [contours[cont_idx] for cont_idx in filtered]
-            print('len of foreground contours in function: ', len(foreground_contours))
+            # print('len of foreground contours in function: ', len(foreground_contours))
             hole_contours = []
             
             for hole_ids in all_holes:
@@ -150,10 +150,10 @@ class WholeSlideImage(object):
 
             return foreground_contours, hole_contours
         
-        print('Image size: ', self.level_dim[-1] )
-        print('Seg_level: ', seg_level)
+        # print('Image size: ', self.level_dim[-1] )
+        # print('Seg_level: ', seg_level)
         img = np.array(self.wsi.read_region((0,0), seg_level, self.level_dim[seg_level]))
-        print('Image size: ', img.shape)
+        # print('Image size: ', img.shape)
         img_hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)  # Convert to HSV space
         img_med = cv2.medianBlur(img_hsv[:,:,1], mthresh)  # Apply median blurring
                
@@ -163,9 +163,9 @@ class WholeSlideImage(object):
         else:
             _, img_otsu = cv2.threshold(img_med, sthresh, sthresh_up, cv2.THRESH_BINARY)
 
-        print('sthresh: ', sthresh)
-        print('sthresh_up: ', sthresh_up)
-        print('type img_otsu: ', type(img_otsu))
+        # print('sthresh: ', sthresh)
+        # print('sthresh_up: ', sthresh_up)
+        # print('type img_otsu: ', type(img_otsu))
         # im = Image.fromarray(img_otsu)
         # im.save('test2.png')
 
@@ -175,52 +175,50 @@ class WholeSlideImage(object):
             img_otsu = cv2.morphologyEx(img_otsu, cv2.MORPH_CLOSE, kernel)    # Remove dots like black noise            
 
         scale = self.level_downsamples[seg_level]
-        print('Scale: ', scale)
+        # print('Scale: ', scale)
         scaled_ref_patch_area = int(ref_patch_size**2 / (scale[0] * scale[1]))
         filter_params = filter_params.copy()
         filter_params['a_t'] = filter_params['a_t'] * scaled_ref_patch_area
         filter_params['a_h'] = filter_params['a_h'] * scaled_ref_patch_area
-        print('a_t: ', filter_params['a_t'] * scaled_ref_patch_area)
-        print('a_h: ', scale)
+        # print('a_t: ', filter_params['a_t'] * scaled_ref_patch_area)
+        # print('a_h: ', scale)
 
         
         # Find and filter contours
         contours, hierarchy = cv2.findContours(img_otsu, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE) # Find contours 
-        print('len of contours: ', len(contours))
+        # print('len of contours: ', len(contours))
 
         # print(hierarchy)
         cv2.drawContours(img_otsu,contours,-1,(0,255,255))  
 
-        im = Image.fromarray(img_otsu)
-        im.save('contours.png')
+        # im = Image.fromarray(img_otsu)
+        # im.save('contours.png')
         
         hierarchy = np.squeeze(hierarchy, axis=(0,))[:, 2:]
-        print('hierarchy_shape: ', hierarchy.shape)
+        # print('hierarchy_shape: ', hierarchy.shape)
 
         if filter_params: 
             foreground_contours, hole_contours = _filter_contours(contours, hierarchy, filter_params)  # Necessary for filtering out artifacts
 
         # cv2.drawContours(img_otsu,hole_contours,-1,(0,0,255))  
-        im = Image.fromarray(img_otsu)
-        im.save('foreground_contours.png')
+        # im = Image.fromarray(img_otsu)
+        # im.save('foreground_contours.png')
 
-        print('len of foreground_contours: ', len(foreground_contours))
+        # print('len of foreground_contours: ', len(foreground_contours))
         self.contours_tissue = self.scaleContourDim(foreground_contours, scale)
-        print('len of contours_tissue: ', len(self.contours_tissue))
+        # print('len of contours_tissue: ', len(self.contours_tissue))
 
         self.holes_tissue = self.scaleHolesDim(hole_contours, scale)
         # print('contours_tissue: ', len(self.contours_tissue))
 
         #exclude_ids = [0,7,9]
         if len(keep_ids) > 0:
-            print('here here 1')
             contour_ids = set(keep_ids) - set(exclude_ids)
         else:
-            print('here here 2')
             contour_ids = set(np.arange(len(self.contours_tissue))) - set(exclude_ids)
         
-        print('keep_ids: ', keep_ids)
-        print('contour_ids: ', contour_ids)
+        # print('keep_ids: ', keep_ids)
+        # print('contour_ids: ', contour_ids)
 
         self.contours_tissue = [self.contours_tissue[i] for i in contour_ids]
         # print('contours_tissue: ', self.contours_tissue)

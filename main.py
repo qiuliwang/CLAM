@@ -42,6 +42,8 @@ def main(args):
     folds = np.arange(start, end)
     for i in folds:
         seed_torch(args.seed)
+        print('$$$$$')
+        print('{}/splits_{}.csv'.format(args.split_dir, i))
         train_dataset, val_dataset, test_dataset = dataset.return_splits(from_id=False, 
                 csv_path='{}/splits_{}.csv'.format(args.split_dir, i))
         
@@ -153,7 +155,7 @@ print('\nLoad Dataset')
 
 if args.task == 'task_1_tumor_vs_normal':
     args.n_classes=2
-    dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/tumor_vs_normal_dummy_clean.csv',
+    dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/processed_label.csv',
                             data_dir= os.path.join(args.data_root_dir, 'tumor_vs_normal_resnet_features'),
                             shuffle = False, 
                             seed = args.seed, 
@@ -187,7 +189,8 @@ if not os.path.isdir(args.results_dir):
     os.mkdir(args.results_dir)
 
 if args.split_dir is None:
-    args.split_dir = os.path.join('splits', args.task+'_{}'.format(int(args.label_frac*100)))
+    # args.split_dir = os.path.join('splits', args.task+'_{}'.format(int(args.label_frac*100)))
+    args.split_dir = os.path.join('splits', args.task+'_{}'.format(int(75)))
 else:
     args.split_dir = os.path.join('splits', args.split_dir)
 
@@ -195,7 +198,6 @@ print('split_dir: ', args.split_dir)
 assert os.path.isdir(args.split_dir)
 
 settings.update({'split_dir': args.split_dir})
-
 
 with open(args.results_dir + '/experiment_{}.txt'.format(args.exp_code), 'w') as f:
     print(settings, file=f)

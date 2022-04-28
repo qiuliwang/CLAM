@@ -30,7 +30,7 @@ def segment(WSI_object, seg_params, filter_params):
 
 def patching(WSI_object, **kwargs):
 	### Start Patch Timer
-	print('Patching Function.')
+	# print('Patching Function.')
 	start_time = time.time()
 
 	# Patch
@@ -184,8 +184,8 @@ def seg_and_patch(source, save_dir, patch_save_dir, mask_save_dir, stitch_save_d
 			df.loc[idx, 'status'] = 'failed_seg'
 			continue
 			
-		print('vis_level: ', current_vis_params['vis_level'])
-		print('seg_level: ', current_seg_params['seg_level'])
+		# print('vis_level: ', current_vis_params['vis_level'])
+		# print('seg_level: ', current_seg_params['seg_level'])
 
 		df.loc[idx, 'vis_level'] = current_vis_params['vis_level']
 		df.loc[idx, 'seg_level'] = current_seg_params['seg_level']
