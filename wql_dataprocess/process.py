@@ -18,7 +18,7 @@ CAMELYON17 data structure:
     patient_000_node_4.tif,negative
 '''
 
-camelyon_data = csvTools.readCSV('/home1/qiuliwang/Data/CAMELYON17/training/stage_labels.csv')
+camelyon_data = csvTools.readCSV('stage_labels.csv')
 print('number of lines: ', len(camelyon_data))
 
 def split_label(temp):
@@ -26,7 +26,8 @@ def split_label(temp):
     # return 0
 
     patient_id = temp[0][:11]
-    slide_id = temp[0][12:len(temp[0]) - 4]
+    slide_id = patient_id + '_' + temp[0][12:len(temp[0]) - 4]
+    
     if temp[1] == 'negative':
         label = 'normal_tissue'
     else:

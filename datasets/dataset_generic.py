@@ -62,7 +62,10 @@ class Generic_WSI_Classification_Dataset(Dataset):
 			label_col = 'label'
 		self.label_col = label_col
 
+		print('csv_path: ', csv_path)
+		
 		slide_data = pd.read_csv(csv_path)
+		print(slide_data)
 		slide_data = self.filter_df(slide_data, filter_dict)
 		slide_data = self.df_prep(slide_data, self.label_dict, ignore, self.label_col)
 
@@ -173,6 +176,7 @@ class Generic_WSI_Classification_Dataset(Dataset):
 			ids = next(self.split_gen)
 
 		if self.patient_strat:
+			print('$$$$$$$$$$$$$$$$$$$$')
 			slide_ids = [[] for i in range(len(ids))] 
 
 			for split in range(len(ids)): 
@@ -184,14 +188,17 @@ class Generic_WSI_Classification_Dataset(Dataset):
 			self.train_ids, self.val_ids, self.test_ids = slide_ids[0], slide_ids[1], slide_ids[2]
 
 		else:
+			print('&&&&&&&&&&&&&&&&&&&&')
 			self.train_ids, self.val_ids, self.test_ids = ids
 
 	def get_split_from_df(self, all_splits, split_key='train'):
 		split = all_splits[split_key]
+		print(len(split))
 		split = split.dropna().reset_index(drop=True)
 
 		if len(split) > 0:
 			mask = self.slide_data['slide_id'].isin(split.tolist())
+			# print('mask: ', mask)
 			df_slice = self.slide_data[mask].reset_index(drop=True)
 			split = Generic_Split(df_slice, data_dir=self.data_dir, num_classes=self.num_classes)
 		else:
@@ -217,8 +224,6 @@ class Generic_WSI_Classification_Dataset(Dataset):
 
 
 	def return_splits(self, from_id=True, csv_path=None):
-
-
 		if from_id:
 			if len(self.train_ids) > 0:
 				train_data = self.slide_data.loc[self.train_ids].reset_index(drop=True)
@@ -244,11 +249,11 @@ class Generic_WSI_Classification_Dataset(Dataset):
 		
 		else:
 			assert csv_path 
-			all_splits = pd.read_csv(csv_path, dtype=self.slide_data['slide_id'].dtype)  # Without "dtype=self.slide_data['slide_id'].dtype", read_csv() will convert all-number columns to a numerical type. Even if we convert numerical columns back to objects later, we may lose zero-padding in the process; the columns must be correctly read in from the get-go. When we compare the individual train/val/test columns to self.slide_data['slide_id'] in the get_split_from_df() method, we cannot compare objects (strings) to numbers or even to incorrectly zero-padded objects/strings. An example of this breaking is shown in https://github.com/andrew-weisman/clam_analysis/tree/main/datatype_comparison_bug-2021-12-01.
+			all_splits = pd.read_csv(csv_path, dtype=self.slide_data['slide_id'].dtype)  
+			# Without "dtype=self.slide_data['slide_id'].dtype", read_csv() will convert all-number columns to a numerical type. Even if we convert numerical columns back to objects later, we may lose zero-padding in the process; the columns must be correctly read in from the get-go. When we compare the individual train/val/test columns to self.slide_data['slide_id'] in the get_split_from_df() method, we cannot compare objects (strings) to numbers or even to incorrectly zero-padded objects/strings. An example of this breaking is shown in https://github.com/andrew-weisman/clam_analysis/tree/main/datatype_comparison_bug-2021-12-01.
 			train_split = self.get_split_from_df(all_splits, 'train')
 			val_split = self.get_split_from_df(all_splits, 'val')
 			test_split = self.get_split_from_df(all_splits, 'test')
-			
 		return train_split, val_split, test_split
 
 	def get_list(self, ids):
