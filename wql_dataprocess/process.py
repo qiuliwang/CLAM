@@ -18,7 +18,7 @@ CAMELYON17 data structure:
     patient_000_node_4.tif,negative
 '''
 
-camelyon_data = csvTools.readCSV('stage_labels.csv')
+camelyon_data = csvTools.readCSV('/home1/qiuliwang/Data/CAMELYON17/training/stage_labels.csv')
 print('number of lines: ', len(camelyon_data))
 
 def split_label(temp):

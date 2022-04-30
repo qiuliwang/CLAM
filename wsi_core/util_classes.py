@@ -105,7 +105,7 @@ class isInContourV3_Hard(Contour_Checking_fn):
 			all_points = [center]
 		
 		for points in all_points:
-			if cv2.pointPolygonTest(self.cont, points, False) < 0:
+			if cv2.pointPolygonTest(self.cont, (int(points[0]), int(points[1])), False) < 0:
 				return 0
 		return 1
 

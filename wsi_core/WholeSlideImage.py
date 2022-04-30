@@ -385,9 +385,8 @@ class WholeSlideImage(object):
     @staticmethod
     def isInHoles(holes, pt, patch_size):
         for hole in holes:
-            if cv2.pointPolygonTest(hole, (pt[0]+patch_size/2, pt[1]+patch_size/2), False) > 0:
-                return 1
-        
+            if cv2.pointPolygonTest(hole, (int(pt[0])+patch_size/2, int(pt[1])+patch_size/2), False) > 0:
+                return 1        
         return 0
 
     @staticmethod
