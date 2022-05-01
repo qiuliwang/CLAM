@@ -20,11 +20,11 @@ data_arguments:
   # preset file for segmentation/patching
   preset: presets/bwh_biopsy.csv
   # file extention for slides
-  slide_ext: .svs
+  slide_ext: .tif
   # label dictionary for str: interger mapping (optional)
   label_dict:
-    LUAD: 0
-    LSCC: 1                        
+    normal_tissue: 0
+    tumor_tissue: 1                        
 patching_arguments:
   # arguments for patching
   patch_size: 256
@@ -48,7 +48,7 @@ heatmap_arguments:
   # whether to also save the original H&E image
   save_orig: true
   # file extension for saving heatmap/original image
-  save_ext: jpg
+  save_ext: png
   # whether to calculate percentile scores in reference to the set of non-overlapping patches
   use_ref_scores: true
   # whether to use gaussian blur for further smoothing

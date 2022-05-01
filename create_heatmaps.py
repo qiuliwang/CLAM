@@ -273,7 +273,7 @@ if __name__ == '__main__':
 		vis_patch_size = tuple((np.array(patch_size) * np.array(wsi_ref_downsample) * patch_args.custom_downsample).astype(int))
 
 		block_map_save_path = os.path.join(r_slide_save_dir, '{}_blockmap.h5'.format(slide_id))
-		mask_path = os.path.join(r_slide_save_dir, '{}_mask.jpg'.format(slide_id))
+		mask_path = os.path.join(r_slide_save_dir, '{}_mask.png'.format(slide_id))
 		if vis_params['vis_level'] < 0:
 			best_level = wsi_object.wsi.get_best_level_for_downsample(32)
 			vis_params['vis_level'] = best_level
@@ -409,7 +409,7 @@ if __name__ == '__main__':
 						  		  thresh=heatmap_args.binary_thresh,  patch_size = vis_patch_size,
 						  		  overlap=patch_args.overlap, 
 						  		  top_left=top_left, bot_right = bot_right)
-			if heatmap_args.save_ext == 'jpg':
+			if heatmap_args.save_ext == 'png':
 				heatmap.save(os.path.join(p_slide_save_dir, heatmap_save_name), quality=100)
 			else:
 				heatmap.save(os.path.join(p_slide_save_dir, heatmap_save_name))
@@ -424,7 +424,7 @@ if __name__ == '__main__':
 				pass
 			else:
 				heatmap = wsi_object.visWSI(vis_level=vis_level, view_slide_only=True, custom_downsample=heatmap_args.custom_downsample)
-				if heatmap_args.save_ext == 'jpg':
+				if heatmap_args.save_ext == 'png':
 					heatmap.save(os.path.join(p_slide_save_dir, heatmap_save_name), quality=100)
 				else:
 					heatmap.save(os.path.join(p_slide_save_dir, heatmap_save_name))

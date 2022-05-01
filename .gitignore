@@ -8,3 +8,6 @@ DataResult/
 *.jpeg
 Features/
 results/
+heatmaps/demo/slides/*.tif
+heatmaps/heatmap_raw_results/HEATMAP_OUTPUT/normal_tissue/
+heatmaps_old/
